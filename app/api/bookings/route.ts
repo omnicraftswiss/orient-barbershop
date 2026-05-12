@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { recordAnonymizedEvent } from '@/lib/analytics'
+import { createCalendarEvent } from '@/lib/google-calendar'
 import type { BookingRequest } from '@/lib/types'
 
 function addMinutes(time: string, minutes: number): string {
@@ -104,6 +105,25 @@ export async function POST(req: NextRequest) {
     birthYear: birthYear ? parseInt(birthYear, 10) : undefined,
     analyticsConsent,
   })
+
+  // Sync to Google Calendar (non-blocking)
+  if (process.env.GOOGLE_SERVICE_ACCOUNT_KEY && process.env.GOOGLE_CALENDAR_ID) {
+    try {
+      await createCalendarEvent({
+        barber_name: barber.name,
+        service_name: service.name,
+        guest_first_name: firstName,
+        guest_last_name: lastName,
+        guest_email: email,
+        booking_date: date,
+        start_time: startTime,
+        end_time: endTime,
+      })
+    } catch (error) {
+      console.error('Calendar sync failed (non-blocking):', error)
+      // Don't fail the booking if calendar sync fails
+    }
+  }
 
   return NextResponse.json({ bookingId: booking.id, success: true })
 }
