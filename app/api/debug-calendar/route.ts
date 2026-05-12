@@ -48,6 +48,7 @@ export async function GET() {
         description: 'Evento de teste para confirmar integração Google Calendar',
         start: { dateTime: tomorrow.toISOString(), timeZone: 'Europe/Zurich' },
         end: { dateTime: end.toISOString(), timeZone: 'Europe/Zurich' },
+        // No attendees — service accounts can't invite on personal Gmail
       },
     })
 

@@ -31,8 +31,8 @@ export async function createCalendarEvent(booking: {
     const endDateTime = new Date(year, month - 1, day, endHour, endMin)
 
     const event = {
-      summary: `${booking.service_name} - ${booking.guest_first_name} ${booking.guest_last_name}`,
-      description: `Barbeiro: ${booking.barber_name}\nEmail cliente: ${booking.guest_email}`,
+      summary: `✂️ ${booking.service_name} — ${booking.guest_first_name} ${booking.guest_last_name}`,
+      description: `Barbeiro: ${booking.barber_name}\nCliente: ${booking.guest_first_name} ${booking.guest_last_name}\nEmail: ${booking.guest_email}`,
       start: {
         dateTime: startDateTime.toISOString(),
         timeZone: 'Europe/Zurich',
@@ -41,7 +41,6 @@ export async function createCalendarEvent(booking: {
         dateTime: endDateTime.toISOString(),
         timeZone: 'Europe/Zurich',
       },
-      attendees: [{ email: booking.guest_email }],
     }
 
     const response = await calendar.events.insert({
